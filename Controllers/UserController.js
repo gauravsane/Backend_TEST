@@ -288,6 +288,10 @@ const getAllWebhooks = async (req, res) => {
     let challenge = req.query["hub.challenge"];
     let token = req.query["hub.verify_token"];
 
+    console.log('mode',mode);
+    console.log('challenge',challenge);
+    console.log('token',token)
+
     if (mode && token) {
       if (mode === "subcribe" && token === mytoken) {
         res.status(200).json({
