@@ -283,7 +283,7 @@ const sendMessage = async (to,body) => {
     console.error("Error sending message:", error);
   }
 };
-sendMessage('+918928008219',"Kam Kar jaldi");
+// sendMessage('+918928008219',"Kam Kar jaldi");
 
 const getAllWebhooks = async (req, res) => {
   console.log(req.query);
