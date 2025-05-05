@@ -247,13 +247,13 @@ const uploadAndUpdate = async () => {
   }
 };
 
-const sendMessage = async () => {
+const sendMessage = async (to,body) => {
   try {
     const response = await axios({
       url: "https://graph.facebook.com/v22.0/674013022456577/messages",
       method: "post",
       headers: {
-        Authorization: `Bearer EAA2ZCURKlOI4BO2XMzZAnvRpQny5z7jr2JZAJlFY0K3v61QBD5IRePqFJxizzXbEtZA8ySUWaTH2pjJmLuH5GkLqKtSmhWngqZCTcEIms0tjGPABL9jO1sdW0vwYeZCMnqxDTgHsZCoPy2mRoSDxYuL25ej24K4NV8GZA7Jo0a73qksWeQCZCMOVsSZARjh5ghOu9MymBQ1lksuB8NCZCgPsuNnt83XhNPnMZCQLBc4VPBoTFD92KvPArCYZD`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       data: JSON.stringify({
@@ -265,14 +265,17 @@ const sendMessage = async () => {
         //  caption: "Media Message"
         // },
         messaging_product: "whatsapp",
-        to: "918928008219",
-        type: "template",
-        template: {
-          name: "hello_world",
-          language: {
-            code: "en_US",
-          },
-        },
+        to: to,
+        type: "text",
+        text:{
+          body: body
+        }
+        // template: {
+        //   name: "hello_world",
+        //   language: {
+        //     code: "en_US",
+        //   },
+        // },
       }),
     });
     console.log("Response", response.data);
@@ -280,7 +283,7 @@ const sendMessage = async () => {
     console.error("Error sending message:", error);
   }
 };
-// sendMessage();
+sendMessage('+918652169433',"Kam Kar jaldi");
 
 const getAllWebhooks = async (req, res) => {
   console.log(req.query);
@@ -341,6 +344,8 @@ const webHooksToSendMessages = async (req, res) => {
     // }
 };
 
+
+// sendMessage1('8652169433','Hello Fawad')
 module.exports = {
   getIdKidney,
   getAllWebhooks,
