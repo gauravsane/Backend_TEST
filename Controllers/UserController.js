@@ -380,7 +380,6 @@ const webHooksToSendMessages = async (req, res) => {
       let existingDoc = await whatsappDataModel.findOne({ From: from });
 
       const newMessage = {
-        _id: new mongoose.Types.ObjectId(),
         timestamp,
         body,
         status,
