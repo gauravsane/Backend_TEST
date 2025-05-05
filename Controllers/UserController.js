@@ -283,14 +283,11 @@ const sendMessage = async () => {
 // sendMessage();
 
 const getAllWebhooks = async (req, res) => {
+  console.log(req.query);
   try {
     let mode = req.query["hub.mode"];
     let challenge = req.query["hub.challenge"];
     let token = req.query["hub.verify_token"];
-
-    console.log('mode',mode);
-    console.log('challenge',challenge);
-    console.log('token',token)
 
     if (mode && token) {
       if (mode === "subcribe" && token === mytoken) {
