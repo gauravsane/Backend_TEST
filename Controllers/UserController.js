@@ -297,7 +297,7 @@ const getAllWebhooks = async (req, res) => {
 };
 
 const webHooksToSendMessages = async (req, res) => {
-    console.log(JSON.stringify(body.stringify(body_params, null, 2)));
+    console.log(JSON.stringify(req.body.stringify(body_params, null, 2)));
     res.status(200).send('Webhook processed')
     // if (
     //   body_params.entry[0] &&
