@@ -284,31 +284,16 @@ const sendMessage = async () => {
 
 const getAllWebhooks = async (req, res) => {
   console.log(req.query);
-  try {
     let mode = req.query["hub.mode"];
     let challenge = req.query["hub.challenge"];
     let token = req.query["hub.verify_token"];
 
-    if (mode && token) {
-      if (mode === "subcribe" && token === mytoken) {
-        res.status(200).json({
-          success: true,
-          message: "Success",
-          challenge,
-        });
-      } else {
-        res.status(404).json({
-          success: false,
-          message: "Data Not Found",
-        });
-      }
+    if(mode && token === mytoken){
+      res.status(200).send(challenge)
     }
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
+    else{
+      res.sendStatus(403)
+    }
 };
 
 const webHooksToSendMessages = async (req, res) => {
