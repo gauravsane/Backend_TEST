@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const whatsappModel = new mongoose({
+const whatsappModel = new mongoose.Schema({
   From: String,
   To: String,
   Messages: [
