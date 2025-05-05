@@ -16,4 +16,7 @@ const whatsappModel = new mongoose.Schema({
   ],
 });
 
-module.exports = new mongoose.Model('whatsappModel',whatsappModel);
+// module.exports = new mongoose.Model('whatsappModel',whatsappModel);
+const Whatsapp = mongoose.model("whatsappModel", whatsappModel);
+
+module.exports = Whatsapp;
