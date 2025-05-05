@@ -297,55 +297,48 @@ const getAllWebhooks = async (req, res) => {
 };
 
 const webHooksToSendMessages = async (req, res) => {
-  try {
-    let body_params = req.body;
     console.log(JSON.stringify(body.stringify(body_params, null, 2)));
-    if (
-      body_params.entry[0] &&
-      body_params.entry[0].changes &&
-      body_params.entry[0].value.message &&
-      body_params.entry[0].value.message[0]
-    ) {
-      let phone_no_id =
-        body_params.entry[0].changes[0].vlaue.metadata.phone_number_id;
-      let from = body_params.entry[0].changes[0].value.messages.from;
-      let msg_body = body_params.entry[0].changes[0].value.message[0].text.body;
+    res.status(200).send('Webhook processed')
+    // if (
+    //   body_params.entry[0] &&
+    //   body_params.entry[0].changes &&
+    //   body_params.entry[0].value.message &&
+    //   body_params.entry[0].value.message[0]
+    // ) {
+    //   let phone_no_id =
+    //     body_params.entry[0].changes[0].vlaue.metadata.phone_number_id;
+    //   let from = body_params.entry[0].changes[0].value.messages.from;
+    //   let msg_body = body_params.entry[0].changes[0].value.message[0].text.body;
 
-      axios({
-        method: "POST",
-        url:
-          "https://graph.facebook.com/v22.0/" +
-          phone_no_id +
-          "/messages?access_token=" +
-          token,
-        data: {
-          messaging_product: "whatsapp",
-          to: from,
-          text: {
-            body: "Hii...I'm Gaurav",
-          },
-        },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      return res.status(200).json({
-        success: true,
-        messsage: "Success",
-      });
-    }
-    else{
-      return res.status(500).json({
-        success: false,
-        message: "Internal Server Error",
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
+    //   axios({
+    //     method: "POST",
+    //     url:
+    //       "https://graph.facebook.com/v22.0/" +
+    //       phone_no_id +
+    //       "/messages?access_token=" +
+    //       token,
+    //     data: {
+    //       messaging_product: "whatsapp",
+    //       to: from,
+    //       text: {
+    //         body: "Hii...I'm Gaurav",
+    //       },
+    //     },
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
+    //   return res.status(200).json({
+    //     success: true,
+    //     messsage: "Success",
+    //   });
+    // }
+    // else{
+    //   return res.status(500).json({
+    //     success: false,
+    //     message: "Internal Server Error",
+    //   });
+    // }
 };
 
 module.exports = {

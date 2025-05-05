@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/getIdKidney', getIdKidney);
 
 router.get('/webhook',getAllWebhooks);
-router.post('/webhookSendMessages',webHooksToSendMessages);
+router.post('/webhook',webHooksToSendMessages);
 
 
 
