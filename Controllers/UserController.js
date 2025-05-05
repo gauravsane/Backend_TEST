@@ -6,6 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const cron = require("node-cron");
 const axios = require("axios");
+const whatsappDataModel = require("../Models/whatsappDataModel");
 
 let isProcessing = false;
 let queue = [];
@@ -257,19 +258,19 @@ const sendMessage = async (to,body) => {
         "Content-Type": "application/json",
       },
       data: JSON.stringify({
-        // messaging_product: "whatsapp",
-        // to: "+918928008219",
-        // type: "image",
-        // image: {
-        //  link: 'https://media.gettyimages.com/id/166080748/vector/cricket-player-strikes-the-ball-for-six.jpg?s=612x612&w=gi&k=20&c=V-kwBs62Vum3JsjZTDYTsXeyvA1Q0-ECKwuq8m39hTg=',
-        //  caption: "Media Message"
-        // },
         messaging_product: "whatsapp",
         to: to,
-        type: "text",
-        text:{
-          body: body
-        }
+        type: "image",
+        image: {
+         link: 'https://media.gettyimages.com/id/166080748/vector/cricket-player-strikes-the-ball-for-six.jpg?s=612x612&w=gi&k=20&c=V-kwBs62Vum3JsjZTDYTsXeyvA1Q0-ECKwuq8m39hTg=',
+         caption: "Happy Mother's Day"
+        },
+        // messaging_product: "whatsapp",
+        // to: to,
+        // type: "text",
+        // text:{
+        //   body: body
+        // }
         // template: {
         //   name: "hello_world",
         //   language: {
@@ -283,10 +284,9 @@ const sendMessage = async (to,body) => {
     console.error("Error sending message:", error);
   }
 };
-// sendMessage('+918928008219',"Kam Kar jaldi");
+// sendMessage('+918928008219',"DD");
 
 const getAllWebhooks = async (req, res) => {
-  console.log(req.query);
     let mode = req.query["hub.mode"];
     let challenge = req.query["hub.challenge"];
     let token = req.query["hub.verify_token"];
@@ -299,62 +299,116 @@ const getAllWebhooks = async (req, res) => {
     }
 };
 
-const webHooksToSendMessages = async (req, res) => {
-  const { entry } = req.body
+// const webHooksToSendMessages = async (req, res) => {
+//   const { entry } = req.body
 
-  if (!entry || entry.length === 0) {
-    return res.status(400).send('Invalid Request')
-  }
+//   if (!entry || entry.length === 0) {
+//     return res.status(400).send('Invalid Request')
+//   }
 
-  const changes = entry[0].changes
+//   const changes = entry[0].changes
 
-  if (!changes || changes.length === 0) {
-    return res.status(400).send('Invalid Request')
-  }
+//   if (!changes || changes.length === 0) {
+//     return res.status(400).send('Invalid Request')
+//   }
 
-  const statuses = changes[0].value.statuses ? changes[0].value.statuses[0] : null
-  const messages = changes[0].value.messages ? changes[0].value.messages[0] : null
+//   const statuses = changes[0].value.statuses ? changes[0].value.statuses[0] : null
+//   const messages = changes[0].value.messages ? changes[0].value.messages[0] : null
 
-  if (statuses) {
-    // Handle message status
-    console.log(`
-      MESSAGE STATUS UPDATE:
-      ID: ${statuses.id},
-      STATUS: ${statuses.status}
-    `)
-  }
+//   console.log('Messages Coming',messages);
 
-  if (messages) {
-    // Handle received messages
-    if (messages.type === 'text') {
-      if (messages.text.body.toLowerCase() === 'hello') {
-        replyMessage(messages.from, 'Hello. How are you?', messages.id)
-      }
+//   if (statuses) {
+//     // Handle message status
+//     console.log(`
+//       MESSAGE STATUS UPDATE:
+//       ID: ${statuses.id},
+//       STATUS: ${statuses.status}
+//     `)
+//   }
 
-      if (messages.text.body.toLowerCase() === 'list') {
-        sendList(messages.from)
-      }
+//   const data = await whatsappDataModel.create({
 
-      if (messages.text.body.toLowerCase() === 'buttons') {
-        sendReplyButtons(messages.from)
-      }
-    }
-
-    if (messages.type === 'interactive') {
-      if (messages.interactive.type === 'list_reply') {
-        sendMessage(messages.from, `You selected the option with ID ${messages.interactive.list_reply.id} - Title ${messages.interactive.list_reply.title}`)
-      }
-
-      if (messages.interactive.type === 'button_reply') {
-        sendMessage(messages.from, `You selected the button with ID ${messages.interactive.button_reply.id} - Title ${messages.interactive.button_reply.title}`)
-      }
-    }
-    
-    console.log(JSON.stringify(messages, null, 2))
-  }
+//   })
+//   // messages.from
+//   // messages.id
+//   // messages.timestamp
+//   // messages.text.body
+//   // statuses.status
   
-  res.status(200).send('Webhook processed')
+//   res.status(200).send('Webhook processed')
+// };
+
+
+
+const webHooksToSendMessages = async (req, res) => {
+  try {
+    const { entry } = req.body;
+
+    if (!entry || entry.length === 0) {
+      return res.status(400).send('Invalid Request');
+    }
+
+    const changes = entry[0].changes;
+
+    if (!changes || changes.length === 0) {
+      return res.status(400).send('Invalid Request');
+    }
+
+    const value = changes[0].value;
+
+    const statuses = value.statuses ? value.statuses[0] : null;
+    const messages = value.messages ? value.messages[0] : null;
+
+    console.log('Messages',messages);
+
+    if (statuses) {
+      console.log(`
+        MESSAGE STATUS UPDATE:
+        ID: ${statuses.id},
+        STATUS: ${statuses.status}
+      `);
+    }
+
+    if (messages) {
+      const from = messages.from;
+      const timestamp = messages.timestamp;
+      const body = messages.text?.body || '';
+      const id = messages.id;
+      const status = statuses?.status || 'sent'; // fallback if status not available
+
+      // Try to find existing document with that sender
+      let existingDoc = await whatsappDataModel.findOne({ From: from });
+
+      const newMessage = {
+        _id: new mongoose.Types.ObjectId(),
+        timestamp,
+        body,
+        status,
+        id,
+      };
+
+      if (existingDoc) {
+        // Push new message to existing doc
+        existingDoc.Messages.push(newMessage);
+        await existingDoc.save();
+      } else {
+        // Create new doc
+        await whatsappDataModel.create({
+          From: from,
+          To: value?.metadata?.display_phone_number || '',
+          Messages: [newMessage],
+        });
+      }
+    }
+
+    res.status(200).send('Webhook processed');
+  } catch (error) {
+    console.error('Webhook Error:', error);
+    res.status(500).send('Internal Server Error');
+  }
 };
+
+
 
 async function replyMessage(to, body, messageId) {
   await axios({
@@ -482,8 +536,6 @@ async function sendReplyButtons(to) {
     })
   })
 }
-
-
 
 
 // sendMessage1('8652169433','Hello Fawad')
